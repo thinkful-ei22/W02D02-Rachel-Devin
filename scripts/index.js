@@ -742,16 +742,24 @@ console.log(decorateResponse(dummy));
 // 2. Using the object, return an HTML string containing all the expected data
 // TEST IT!
 const generateVideoItemHtml = function(video) {
-
+  return `https://www.youtube.com/watch?v=${video.id}`;
+  
 };
+const test = decorateResponse(dummy);
+console.log(generateVideoItemHtml(test[0]));
+
+
 
 // TASK:
 // 1. Create a `addVideosToStore` function that receives an array of decorated video 
 // objects and sets the array as the value held in store.videos
 // TEST IT!
 const addVideosToStore = function(videos) {
+  store.videos = videos;
 
 };
+addVideosToStore(test);
+console.log(store.videos);
 
 // TASK:
 // 1. Create a `render` function
@@ -759,7 +767,7 @@ const addVideosToStore = function(videos) {
 // 3. Add your array of DOM elements to the appropriate DOM element
 // TEST IT!
 const render = function() {
-
+  
 };
 
 // TASK:
