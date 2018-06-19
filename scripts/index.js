@@ -18,7 +18,8 @@ const store = {
   videos: [],
   prevPageToken: undefined,
   nextPageToken: undefined,
-  searchTerm: ''
+  searchTerm: '',
+  page: 1
 };
 
 // TASK: Add the Youtube Search API Base URL here:
@@ -46,7 +47,7 @@ const fetchVideos = function(searchTerm, callback) {
 const fetchPrevOrNextPage = function(pageToken, callback){
   
   if(pageToken){
-    console.log("I AM NOT A CROOK");
+
     const query = {
       q: store.searchTerm,
       pageToken: pageToken,
@@ -122,7 +123,7 @@ const render = function() {
   const videosHTML = store.videos.map(function(video){
     return generateVideoItemHtml(video);
   }).join('');
-
+  $('.js-page').html(store.page);
   $('.results').html(videosHTML);
 };
 
@@ -142,20 +143,25 @@ const handleFormSubmit = function() {
     event.preventDefault();
     const search = $('#search-term').val();
     $('#search-term').val('');
-
+    store.page = 1;
     fetchVideos(search, processResponse);
   });
 };
+
 
 const handlePageNavButtons = function(){
   $('.js-button').click(function(event){
     
     switch(this.value){
       case 'prev': 
-        fetchPrevOrNextPage(store.prevPageToken, processResponse);
+        if (store.page > 1) {
+          fetchPrevOrNextPage(store.prevPageToken, processResponse);
+          store.page = store.page - 1;
+        }
         break;
       case 'next':
         fetchPrevOrNextPage(store.nextPageToken, processResponse);
+        store.page = store.page + 1;
         break;
     }
   });
@@ -172,6 +178,7 @@ const setPageTokensInStore = function(response){
   store.nextPageToken = response.nextPageToken;
   store.prevPageToken = response.prevPageToken;
 };
+
 
 // When DOM is ready:
 $(function () {
