@@ -10,10 +10,15 @@
 </head>
 <body>
     <h1>Youtube Api</h1>
-    <form id="js-search-form">
-        <input type="text" id="search-term" />
-        <input type="submit" value="Go" />
-    </form>
+    <nav>
+        <form id="js-search-form">
+            <input type="text" id="search-term" />
+            <input type="submit" value="Go" />
+        </form><br>
+        <input type="button" class="js-button button-prev" value="prev">
+        <input type="button" class="js-button button-next" value="next">
+    </nav>
+    
     <ul class='results'></ul>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>

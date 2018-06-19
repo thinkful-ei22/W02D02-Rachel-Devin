@@ -15,7 +15,10 @@ const API_KEY = 'AIzaSyAzlBuGPF56TrFmwKWbYaOwlGEXLfYphYM';
 
 */
 const store = {
-  videos: []
+  videos: [],
+  prevPageToken: undefined,
+  nextPageToken: undefined,
+  searchTerm: ''
 };
 
 // TASK: Add the Youtube Search API Base URL here:
@@ -28,7 +31,8 @@ const BASE_URL = 'https://www.googleapis.com/youtube/v3/search';
 // 3. Make a getJSON call using the query object and sending the provided callback in as the last argument
 // TEST IT! Execute this function and console log the results inside the callback.
 const fetchVideos = function(searchTerm, callback) {
-
+  
+  store.searchTerm = searchTerm;
   const query = {
     q: searchTerm,
     part: 'snippet',
@@ -37,6 +41,22 @@ const fetchVideos = function(searchTerm, callback) {
   };
 
   $.getJSON(BASE_URL, query, callback);
+};
+
+const fetchPrevOrNextPage = function(pageToken, callback){
+  
+  if(pageToken){
+    console.log("I AM NOT A CROOK");
+    const query = {
+      q: store.searchTerm,
+      pageToken: pageToken,
+      part: 'snippet',
+      key: API_KEY,
+      maxResults: 20
+    };
+  
+    $.getJSON(BASE_URL, query, callback);
+  }
 };
 
 // TASK:
@@ -123,12 +143,34 @@ const handleFormSubmit = function() {
     const search = $('#search-term').val();
     $('#search-term').val('');
 
-    fetchVideos(search, function(response){
-      const videos = decorateResponse(response);
-      addVideosToStore(videos);
-      render();
-    });
+    fetchVideos(search, processResponse);
   });
+};
+
+const handlePageNavButtons = function(){
+  $('.js-button').click(function(event){
+    
+    switch(this.value){
+      case 'prev': 
+        fetchPrevOrNextPage(store.prevPageToken, processResponse);
+        break;
+      case 'next':
+        fetchPrevOrNextPage(store.nextPageToken, processResponse);
+        break;
+    }
+  });
+};
+
+const processResponse = function(response){
+  setPageTokensInStore(response);
+  const videos = decorateResponse(response);
+  addVideosToStore(videos);
+  render();
+};
+
+const setPageTokensInStore = function(response){
+  store.nextPageToken = response.nextPageToken;
+  store.prevPageToken = response.prevPageToken;
 };
 
 // When DOM is ready:
@@ -136,4 +178,5 @@ $(function () {
   // TASK:
   // 1. Run `handleFormSubmit` to bind the event listener to the DOM
   handleFormSubmit();
+  handlePageNavButtons();
 });
